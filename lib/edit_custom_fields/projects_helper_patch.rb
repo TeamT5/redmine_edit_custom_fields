@@ -20,14 +20,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-class AddUserEditableToCustomField < ActiveRecord::Migration[4.2]
+require_dependency 'projects_helper'
 
-  def self.up
-    add_column :custom_fields, :user_editable, :boolean, :default => false, :null => false
+module EditCustomFields
+  module ProjectsHelperPatch
+    extend ActiveSupport::Concern
+
+    def project_settings_tabs
+      tabs = super
+
+      if User.current.allowed_to?(:edit_custom_fields, @project) &&
+   @project.module_enabled?(:edit_custom_fields)
+        tabs << {
+          name: 'edit_custom_fields',
+          action: :edit_custom_fields,
+          partial: 'edit_custom_fields_settings/form',
+          label: :'edit_custom_fields.label_settings' }
+      end
+
+      tabs
+    end
   end
+end
 
-  def self.down
-    remove_column :custom_fields, :user_editable
-  end
+ProjectsHelper.prepend(EditCustomFields::ProjectsHelperPatch)
 
+EditCustomFields::ProjectsHelperPatch.tap do |mod|
+  ProjectsHelper.send :include, mod unless ProjectsHelper.include?(mod)
 end

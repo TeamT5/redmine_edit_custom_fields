@@ -20,14 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-class AddUserEditableToCustomField < ActiveRecord::Migration[4.2]
+class EditCustomFieldsHook < Redmine::Hook::ViewListener
 
-  def self.up
-    add_column :custom_fields, :user_editable, :boolean, :default => false, :null => false
-  end
-
-  def self.down
-    remove_column :custom_fields, :user_editable
-  end
+  render_on :view_custom_fields_form_issue_custom_field, :partial => 'custom_fields/options'
 
 end

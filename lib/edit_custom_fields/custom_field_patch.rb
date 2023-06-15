@@ -20,14 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-class AddUserEditableToCustomField < ActiveRecord::Migration[4.2]
+require_dependency 'custom_field'
 
-  def self.up
-    add_column :custom_fields, :user_editable, :boolean, :default => false, :null => false
+module EditCustomFields
+  module CustomFieldPatch
+    unloadable
+    CustomField.safe_attributes 'user_editable'
+
+    extend ActiveSupport::Concern
+
+    def user_editable?
+      user_editable == true
+    end
   end
-
-  def self.down
-    remove_column :custom_fields, :user_editable
-  end
-
 end

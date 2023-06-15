@@ -33,11 +33,11 @@ Redmine::Plugin.register :redmine_edit_custom_fields do
     permission :edit_custom_fields, { edit_custom_fields_settings: [ :update ] }, require: :member
   end
 end
-
-Rails.configuration.to_prepare do
+Rails.application.config.after_initialize do 
+#Rails.configuration.to_prepare do
   # Load patches for Redmine
-  require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib', 'custom_field_patch' )
-  require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib', 'projects_helper_patch' )
+  require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib','edit_custom_fields','custom_field_patch' )
+  require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib','edit_custom_fields', 'projects_helper_patch' )
 
   # Load application helper
   ::EditCustomFieldsHelper.tap do |mod|
@@ -46,4 +46,4 @@ Rails.configuration.to_prepare do
 end
 
 # Load hooks
-require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib', 'edit_custom_fields_hook' )
+require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib','edit_custom_fields' ,'edit_custom_fields_hook' )
